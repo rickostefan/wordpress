@@ -33,7 +33,7 @@ function deliver_mail() {
 		// sanitize form values
 		$name    = sanitize_text_field( $_POST["contact-name"] );
 		$email   = sanitize_email( $_POST["contact-email"] );
-		$subject = sanitize_text_field( $_POST["contact-subject"] );
+		$subject = "subject";
 		$message = esc_textarea( $_POST["contact-message"] );
 
 		// get the blog administrator's email address
