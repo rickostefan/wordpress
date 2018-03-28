@@ -213,12 +213,12 @@ if (!class_exists( 'ContactFormClass' ))
      *
      * @return instance value
      */
-    function ricko_messages_class() 
+    function contact_messages_class() 
     {
     	return ContactFormClass::instance();
     }
 }
-ricko_messages_class();
+contact_messages_class();
 
 
 if (!class_exists( 'ContactFormWidget' )) 
