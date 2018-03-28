@@ -1,65 +1,76 @@
 <?php
-/*
-Plugins Name : Form simple
-Plugins URI : https://www.rickostefan.com/
-Description: -
-Version: 1.0
-Author: Ricko
-*/
+/**
+ * Plugin Name:       Form Simple
+ * Description:       Form
+ * Version:           3.0.0
+ * Author:            Ricko
+ * Author URI:        http://www.rickostefan.com
+ */
 
-function wordpress_form_custom() {
-	echo '<form action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '" method="post">';
-	echo '<p>';
-	echo 'Name (required) <br/>';
-	echo '<input type="text" name="contact-name" value="' . ( isset( $_POST["contact-name"] ) ? esc_attr( $_POST["contact-name"] ) : '' ) . '" size="40" />';
-	echo '</p>';
-	echo '<p>';
-	echo 'Email (required) <br/>';
-	echo '<input type="email" name="contact-email" value="' . ( isset( $_POST["contact-email"] ) ? esc_attr( $_POST["contact-email"] ) : '' ) . '" size="40" />';
-	echo '</p>';
-	echo '<p>';
-	echo 'Message (required) <br/>';
-	echo '<textarea rows="10" cols="35" name="contact-message">' . ( isset( $_POST["contact-message"] ) ? esc_attr( $_POST["contact-message"] ) : '' ) . '</textarea>';
-	echo '</p>';
-	echo '<p><input type="submit" name="contact-submitted" value="Send"></p>';
-	echo '</form>';
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
 }
 
-function deliver_mail() {
 
-	// if the submit button is clicked, send the email
-	if ( isset( $_POST['contact-submitted'] ) ) {
+function contact_form( $name, $email, $contact_message ) {
+	//post email
+	if(isset($_POST['submit']) && $_POST['submit'] == 'submit'){
 
-		// sanitize form values
-		$name    = sanitize_text_field( $_POST["contact-name"] );
-		$email   = sanitize_email( $_POST["contact-email"] );
+		$name = $_POST['names'];
+		$email = $_POST['email'];
+		$contact_message = $_POST['contact_message'];
 		$subject = "subject";
-		$message = esc_textarea( $_POST["contact-message"] );
+		$email_mail = '<ricko@softwareseni.com>';
+		$message = "Name: " . $name . "\n\nEmail: " . $email . "\n\n" . "\n\nContact Message: " . $contact_message . "\n\n" . $_POST['message'];
 
-		// get the blog administrator's email address
-		$to = get_option( 'admin_email' );
+		$headers = array('Content-Type: text/html; charset=UTF-8');
+		$headers[] = 'From: Ricko Stefan <ricko@softwareseni.com>';
 
-		$headers = "From: $name <$email>" . "\r\n";
-
-		// If email has been process for sending, display a success message
-		if ( wp_mail( $to, $subject, $message, $headers ) ) {
-			echo '<div>';
-			echo '<p>Makasih udah menghubungi kami.</p>';
-			echo '</div>';
-		} else {
-			echo 'Etss ada error!!!';
+		if (wp_mail ( $email_mail, $subject, $message, $headers )) {
+			echo "Email send. We can contacts you leter.";
+		}else{
+			echo "something went wrong to send email, please try again later.";
 		}
+
 	}
-}
 
-function form_shortcode() {
 	ob_start();
-	deliver_mail();
-	wordpress_form_custom();
 
-	return ob_get_clean();
-}
+	?>
 
-add_shortcode( 'ricko_contact_form', 'form_shortcode' );
+	<div class="contact_form">
+		<div id="return" class="center"></div>
+		<form method="post" action="">
 
-?>
+			<div class="contact-outer">
+				<div class="contact-box">
+
+							<div class="contact-box">
+								<div class="contact-inner half">
+									<p class="small">* Mandatory fields. We respect your privacy.</p>
+									<div class="contact-bio left">
+										<input type="text" size="37" name="names" id="name" required placeholder="Name *"/>
+										<input type="text" size="37" name="email" id="email" size="45" required placeholder="Email *"/>
+										<input type="textarea" size="37" name="contact_message" id="contact_message" required placeholder="Contact Message *"/>
+									</div>
+									<label>&nbsp;</label><input name='submit' type="submit" class="btn" value="submit"><div class="clear"></div>
+								</div><!-- end .contact-inner -->
+							</div><!-- end .contact-box -->
+				</form>
+			</div>
+			<script type="text/javascript">
+				// for add js soon
+				/*jQuery(document).ready(function(){
+					$jQuery("#contactForm").validate();
+				});*/
+			</script>
+			<?php
+			$content = ob_get_contents();
+			ob_end_clean();
+
+			return $content;
+		}
+
+		?>
+		<?php add_shortcode( 'ricko_contact_form', 'contact_form' ); ?>
